@@ -38,7 +38,7 @@
           <p><strong>Scopo del Calcolo:</strong> La formula è specifica per determinare lo spessore minimo di isolante per **prevenire la formazione di condensa** sulla superficie esterna.</p>
           <p><strong>Assunzioni:</strong> Regime stazionario, proprietà costanti, resistenza termica dell'aria trascurabile.</p>
           <p><strong>Limitazioni:</strong> Non considera radiazione termica, effetti del vento variabile, geometrie complesse.</p>
-          <p><strong>Raccomandazioni:</strong> Verificare α per condizioni specifiche, considerare margini di sicurezza aggiuntivi per applicazioni critiche.</p>
+          <p><strong>Raccomandazioni:</strong> Verificare α per condizioni specifiche, considerare margini di sicurezza aggiuntivi.</p>
         </div>
       </div>
 
@@ -46,105 +46,57 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             <i data-lucide="thermometer" class="w-4 h-4 inline mr-1"></i>
-            Temperatura del fluido nel tubo Ti (°C)
+            Temperatura fluido Tᵢ (°C)
           </label>
-          <input
-            id="Ti"
-            type="number"
-            step="0.1"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="es. 7"
-          />
+          <input id="Ti" type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="es. 7" />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             <i data-lucide="thermometer" class="w-4 h-4 inline mr-1"></i>
-            Temperatura ambiente Ta (°C)
+            Temperatura ambiente Tₐ (°C)
           </label>
-          <input
-            id="Ta"
-            type="number"
-            step="0.1"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="es. 35"
-          />
+          <input id="Ta" type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="es. 35" />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Coeff. convezione termica α (W/m²·K)
+            Coeff. convezione α (W/m²·K)
           </label>
-          <input
-            id="alpha"
-            type="number"
-            step="0.1"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="es. 5"
-          />
-          <p class="text-xs text-gray-500 mt-1">
-            Aria ferma: ~5, Aria in movimento: 10-25
-          </p>
+          <input id="alpha" type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="es. 5" />
+          <p class="text-xs text-gray-500 mt-1">Aria ferma: ~5, Aria mossa: 10-25</p>
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Conduttività termica dell'isolante λ (W/m·K)
+            Conduttività isolante λ (W/m·K)
           </label>
-          <input
-            id="lambda"
-            type="number"
-            step="0.001"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="es. 0.038"
-          />
+          <input id="lambda" type="number" step="0.001" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="es. 0.038" />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            <i data-lucide="thermometer" class="w-4 h-4 inline mr-1"></i>
+            <i data-lucide="droplets" class="w-4 h-4 inline mr-1"></i>
             Umidità relativa RH (%)
           </label>
-          <input
-            id="RH"
-            type="number"
-            step="0.1"
-            min="1"
-            max="100"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="es. 50"
-          />
-           <p class="text-xs text-gray-500 mt-1">
-              La temperatura di rugiada sarà calcolata.
-            </p>
+          <input id="RH" type="number" step="0.1" min="1" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="es. 50" />
+           <p class="text-xs text-gray-500 mt-1">Da 1 a 100.</p>
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             <i data-lucide="layers" class="w-4 h-4 inline mr-1"></i>
-            Diametro esterno della tubazione d₁ (mm)
+            Diametro esterno tubo d₁ (mm)
           </label>
-          <input
-            id="d1"
-            type="number"
-            step="0.1"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="es. 25"
-          />
+          <input id="d1" type="number" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="es. 25" />
         </div>
       </div>
 
       <div class="flex gap-4 mb-6">
-        <button
-          id="calculateButton"
-          class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors font-medium"
-        >
+        <button id="calculateButton" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors font-medium">
           Calcola Spessore Minimo
         </button>
-        <button
-          id="clearButton"
-          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-        >
+        <button id="clearButton" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
           Cancella
         </button>
       </div>
@@ -156,8 +108,10 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Inizializza le icone
       lucide.createIcons();
 
+      // 2. Seleziona tutti gli elementi del DOM
       const inputs = {
         Ti: document.getElementById('Ti'),
         Ta: document.getElementById('Ta'),
@@ -166,13 +120,12 @@
         RH: document.getElementById('RH'),
         d1: document.getElementById('d1')
       };
-      
       const resultContainer = document.getElementById('result-container');
       const calculationsContainer = document.getElementById('calculations-container');
-      
-      document.getElementById('calculateButton').addEventListener('click', calculateThickness);
-      document.getElementById('clearButton').addEventListener('click', clearAll);
-      
+      const calculateButton = document.getElementById('calculateButton');
+      const clearButton = document.getElementById('clearButton');
+
+      // 3. DEFINIZIONE DI TUTTE LE FUNZIONI
       const clearAll = () => {
         for (const key in inputs) {
           inputs[key].value = '';
@@ -189,9 +142,74 @@
         return dewPoint;
       };
 
+      const renderResult = (result) => {
+        resultContainer.innerHTML = `
+          <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6 animate-fade-in">
+            <h2 class="text-xl font-bold text-green-800 mb-4">Risultato</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-white p-4 rounded-md shadow">
+                <h3 class="font-semibold text-gray-800 mb-2">Spessore Minimo Richiesto</h3>
+                <p class="text-2xl font-bold text-green-600">${result.minimumThickness.toFixed(0)} mm</p>
+                <p class="text-sm text-gray-600">(${(result.minimumThickness/1000).toFixed(3)} m)</p>
+              </div>
+              <div class="bg-white p-4 rounded-md shadow">
+                <h3 class="font-semibold text-gray-800 mb-2">Temperatura di Rugiada</h3>
+                <p class="text-xl font-bold text-blue-600">${result.dewPoint.toFixed(1)} °C</p>
+                <p class="text-sm text-gray-600">Calcolata con RH=${inputs.RH.value}%</p>
+              </div>
+              <div class="bg-white p-4 rounded-md shadow">
+                <h3 class="font-semibold text-gray-800 mb-2">Verifica Equazione</h3>
+                <p class="text-sm text-gray-600">Lato sx: <span class="font-mono">${result.leftSide.toFixed(6)}</span></p>
+                <p class="text-sm text-gray-600">Lato dx: <span class="font-mono">${result.rightSide.toFixed(6)}</span></p>
+                <p class="text-sm text-gray-600">Differenza: <span class="font-semibold text-green-600">+${result.percentageDifference.toFixed(1)}%</span></p>
+              </div>
+            </div>
+          </div>`;
+      };
+
+      const renderCalculations = (calculations) => {
+        if (!calculations || calculations.length === 0) {
+            calculationsContainer.innerHTML = '';
+            return;
+        }
+        const lastTen = calculations.slice(-10);
+        const tableRows = lastTen.map(calc => {
+          const isResultRow = calc.percentageDifference >= 30;
+          const rowClass = isResultRow ? "bg-green-100 font-bold" : "bg-white";
+          const diffClass = isResultRow ? "text-green-600" : "";
+          return `
+            <tr class="${rowClass}">
+              <td class="p-2 font-mono text-center">${calc.thickness.toFixed(0)}</td>
+              <td class="p-2 font-mono text-center">${calc.leftSide}</td>
+              <td class="p-2 font-mono text-center">${calc.rightSide}</td>
+              <td class="p-2 font-mono text-center">${calc.ratio}</td>
+              <td class="p-2 font-mono text-center"><span class="${diffClass}">${calc.percentageDifference}%</span></td>
+            </tr>`;
+        }).join('');
+
+        calculationsContainer.innerHTML = `
+          <div class="bg-gray-50 rounded-lg p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">Dettaglio Iterazioni di Calcolo</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-gray-200">
+                  <tr>
+                    <th class="text-center p-2">Spessore (mm)</th>
+                    <th class="text-center p-2">Lato Sinistro</th>
+                    <th class="text-center p-2">Lato Destro</th>
+                    <th class="text-center p-2">Rapporto</th>
+                    <th class="text-center p-2">Differenza %</th>
+                  </tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+              </table>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Mostrate le ultime 10 iterazioni. La riga evidenziata indica il primo spessore che soddisfa il criterio del +30%.</p>
+          </div>`;
+      };
+      
       const calculateThickness = () => {
-        resultContainer.innerHTML = '';
-        calculationsContainer.innerHTML = '';
+        clearAll(); // Pulisce i risultati precedenti ad ogni nuovo calcolo
 
         const Ti = parseFloat(inputs.Ti.value);
         const Ta = parseFloat(inputs.Ta.value);
@@ -200,25 +218,30 @@
         const RH = parseFloat(inputs.RH.value);
         const d1_mm = parseFloat(inputs.d1.value);
 
-        if ([Ti, Ta, alpha, lambda, RH, d1_mm].some(isNaN)) {
+        if ([Ti, Ta, alpha, lambda, RH, d1_mm].some(v => isNaN(v))) {
           alert('Per favore inserisci tutti i valori numerici validi.');
           return;
         }
         
-        if (RH <= 0 || RH > 100) {
-          alert("L'umidità relativa deve essere un valore positivo e non superiore a 100%.");
+        if (d1_mm <= 0 || alpha <= 0 || lambda <= 0) {
+            alert("I valori per diametro (d₁), coeff. di convezione (α) e conduttività (λ) devono essere maggiori di zero.");
+            return;
+        }
+
+        if (RH < 1 || RH > 100) {
+          alert("L'umidità relativa deve essere un valore compreso tra 1 e 100%.");
           return;
         }
 
         const Td = calculateDewPoint(Ta, RH);
 
         if (Ti >= Td) {
-            alert("Nessun Rischio di Condensa:\nLa temperatura del fluido (" + Ti.toFixed(1) + "°C) è superiore o uguale alla temperatura di rugiada (" + Td.toFixed(1) + "°C).\n\nQuesto calcolatore è specifico per prevenire la condensa, che si verifica quando il fluido è più freddo dell'aria.");
+            alert(`Nessun Rischio di Condensa:\n\nLa temperatura del fluido (${Ti.toFixed(1)}°C) è superiore o uguale alla temperatura di rugiada (${Td.toFixed(1)}°C).\n\nQuesto calcolo previene la condensa, che si verifica solo quando il fluido è più freddo dell'aria circostante (e della sua Td).`);
             return;
         }
 
         if (Td >= Ta) {
-            alert("Condizioni Ambientali Non Valide:\nLa temperatura di rugiada (" + Td.toFixed(1) + "°C) è superiore o uguale alla temperatura ambiente (" + Ta.toFixed(1) + "°C).\n\nQuesto implica un'umidità relativa del 100% o superiore, una condizione in cui la formula non è applicabile o l'aria è già satura.");
+            alert(`Condizioni Ambientali non Valide:\n\nLa temperatura di rugiada (${Td.toFixed(1)}°C) è superiore o uguale alla temperatura ambiente (${Ta.toFixed(1)}°C).\n\nQuesto implica una condizione di saturazione (RH >= 100%) dove la formula non è applicabile.`);
             return;
         }
 
@@ -232,7 +255,6 @@
         while (!found && L <= 0.5) {
           const d1Plus2L = d1 + 2 * L;
           const leftSide = d1Plus2L * Math.log(d1Plus2L / d1);
-          
           const ratio = leftSide / rightSide;
           const percentageDifference = ((leftSide - rightSide) / rightSide) * 100;
           
@@ -254,97 +276,21 @@
               percentageDifference: percentageDifference,
               dewPoint: Td
             });
-            renderCalculations(calculationSteps);
           } else {
             L += 0.001;
           }
         }
         
+        renderCalculations(calculationSteps);
+        
         if (!found) {
-          alert('Soluzione non trovata entro 500mm di spessore. Verifica i parametri inseriti, potrebbero richiedere uno spessore eccessivo.');
-          renderCalculations(calculationSteps);
+          alert('Soluzione non trovata entro 500mm di spessore. Verifica i parametri inseriti, potrebbero richiedere uno spessore eccessivo o essere incoerenti.');
         }
       };
-      
-      const renderResult = (result) => {
-        resultContainer.innerHTML = `
-          <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-            <h2 class="text-xl font-bold text-green-800 mb-4">Risultato</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="bg-white p-4 rounded-md shadow">
-                <h3 class="font-semibold text-gray-800 mb-2">Spessore Minimo Richiesto</h3>
-                <p class="text-2xl font-bold text-green-600">${result.minimumThickness.toFixed(0)} mm</p>
-                <p class="text-sm text-gray-600">(${(result.minimumThickness/1000).toFixed(3)} m)</p>
-              </div>
-              <div class="bg-white p-4 rounded-md shadow">
-                <h3 class="font-semibold text-gray-800 mb-2">Temperatura di Rugiada</h3>
-                <p class="text-xl font-bold text-blue-600">${result.dewPoint.toFixed(1)} °C</p>
-                <p class="text-sm text-gray-600">Calcolata con RH=${inputs.RH.value}%</p>
-              </div>
-              <div class="bg-white p-4 rounded-md shadow">
-                <h3 class="font-semibold text-gray-800 mb-2">Verifica Equazione</h3>
-                <p class="text-sm text-gray-600">
-                  Lato sx: <span class="font-mono">${result.leftSide.toFixed(6)}</span>
-                </p>
-                <p class="text-sm text-gray-600">
-                  Lato dx: <span class="font-mono">${result.rightSide.toFixed(6)}</span>
-                </p>
-                 <p class="text-sm text-gray-600">
-                  Differenza: <span class="font-semibold text-green-600">+${result.percentageDifference.toFixed(1)}%</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        `;
-      };
-      
-      const renderCalculations = (calculations) => {
-        if (calculations.length === 0) {
-            calculationsContainer.innerHTML = '';
-            return;
-        }
-        const lastTen = calculations.slice(-10);
-        const tableRows = lastTen.map(calc => {
-          const rowClass = calc.percentageDifference >= 30 ? "bg-green-100" : "bg-white";
-          const diffClass = calc.percentageDifference >= 30 ? "text-green-600 font-semibold" : "";
-          return `
-            <tr class="${rowClass}">
-              <td class="p-2 font-mono text-center">${calc.thickness.toFixed(0)}</td>
-              <td class="p-2 font-mono text-center">${calc.leftSide}</td>
-              <td class="p-2 font-mono text-center">${calc.rightSide}</td>
-              <td class="p-2 font-mono text-center">${calc.ratio}</td>
-              <td class="p-2 font-mono text-center">
-                <span class="${diffClass}">${calc.percentageDifference}%</span>
-              </td>
-            </tr>
-          `;
-        }).join('');
 
-        calculationsContainer.innerHTML = `
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">Dettaglio Iterazioni di Calcolo</h2>
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm">
-                <thead class="bg-gray-200">
-                  <tr>
-                    <th class="text-center p-2">Spessore (mm)</th>
-                    <th class="text-center p-2">Lato Sinistro</th>
-                    <th class="text-center p-2">Lato Destro</th>
-                    <th class="text-center p-2">Rapporto</th>
-                    <th class="text-center p-2">Differenza %</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${tableRows}
-                </tbody>
-              </table>
-            </div>
-            <p class="text-xs text-gray-500 mt-2">
-              Mostrate le ultime 10 iterazioni. La riga evidenziata in verde indica il primo spessore che soddisfa il criterio del +30%.
-            </p>
-          </div>
-        `;
-      };
+      // 4. COLLEGAMENTO DEGLI EVENT LISTENER
+      calculateButton.addEventListener('click', calculateThickness);
+      clearButton.addEventListener('click', clearAll);
     });
   </script>
 </body>
