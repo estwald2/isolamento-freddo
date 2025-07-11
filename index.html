@@ -1,0 +1,334 @@
+import React, { useState } from 'react';
+import { Calculator, Thermometer, Layers } from 'lucide-react';
+
+export default function InsulationThicknessCalculator() {
+  const [inputs, setInputs] = useState({
+    Ti: '',     // Fluid temperature (°C)
+    Ta: '',     // Ambient temperature (°C)
+    alpha: '',  // Heat transfer coefficient (W/m²·K)
+    lambda: '', // Thermal conductivity coefficient (W/m·K)
+    RH: '',     // Relative humidity (%)
+    d1: ''      // External diameter of tube (mm)
+  });
+  
+  const [result, setResult] = useState(null);
+  const [calculations, setCalculations] = useState([]);
+
+  const handleInputChange = (field, value) => {
+    setInputs(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const calculateDewPoint = (temperature, relativeHumidity) => {
+    // Magnus formula approximation for dew point calculation
+    const a = 17.27;
+    const b = 237.7;
+    const alpha = ((a * temperature) / (b + temperature)) + Math.log(relativeHumidity / 100);
+    const dewPoint = (b * alpha) / (a - alpha);
+    return dewPoint;
+  };
+
+  const calculateThickness = () => {
+    // Convert inputs to numbers
+    const Ti = parseFloat(inputs.Ti);
+    const Ta = parseFloat(inputs.Ta);
+    const alpha = parseFloat(inputs.alpha);
+    const lambda = parseFloat(inputs.lambda);
+    const RH = parseFloat(inputs.RH);
+    const d1_mm = parseFloat(inputs.d1);
+
+    // Validate inputs
+    if (isNaN(Ti) || isNaN(Ta) || isNaN(alpha) || isNaN(lambda) || isNaN(RH) || isNaN(d1_mm)) {
+      alert('Per favore inserisci tutti i valori numerici validi');
+      return;
+    }
+
+    if (RH <= 0 || RH > 100) {
+      alert('L\'umidità relativa deve essere tra 0 e 100%');
+      return;
+    }
+
+    // Calculate dew point using Magnus formula
+    const Td = calculateDewPoint(Ta, RH);
+    
+    // Convert d1 from mm to m for calculations
+    const d1 = d1_mm / 1000;
+
+    const calculationSteps = [];
+    let L = 0.009; // Start from 9mm = 0.009m
+    let found = false;
+    
+    // Right side of equation (constant)
+    const rightSide = (2 * lambda / alpha) * ((Ti - Td) / (Td - Ta));
+    
+    while (!found && L <= 0.5) { // Safety limit at 0.5m
+      // Left side of equation: (d1 + 2L) * ln((d1 + 2L) / d1)
+      const d1Plus2L = d1 + 2 * L;
+      const leftSide = d1Plus2L * Math.log(d1Plus2L / d1);
+      
+      const ratio = leftSide / rightSide;
+      const percentageDifference = ((leftSide - rightSide) / rightSide) * 100;
+      
+      calculationSteps.push({
+        thickness: L * 1000, // Convert to mm for display
+        leftSide: leftSide.toFixed(6),
+        rightSide: rightSide.toFixed(6),
+        ratio: ratio.toFixed(4),
+        percentageDifference: percentageDifference.toFixed(2)
+      });
+      
+      // Check if left side is 30% higher than right side
+      if (leftSide >= rightSide * 1.30) {
+        found = true;
+        setResult({
+          minimumThickness: L * 1000, // Convert to mm
+          leftSide: leftSide,
+          rightSide: rightSide,
+          ratio: ratio,
+          percentageDifference: percentageDifference,
+          dewPoint: Td // Add calculated dew point to result
+        });
+      } else {
+        L += 0.001; // Increase by 1mm
+      }
+    }
+    
+    if (!found) {
+      alert('Soluzione non trovata entro 500mm di spessore. Verifica i parametri inseriti.');
+    }
+    
+    setCalculations(calculationSteps);
+  };
+
+  const clearAll = () => {
+    setInputs({
+      Ti: '',
+      Ta: '',
+      alpha: '',
+      lambda: '',
+      RH: '',
+      d1: ''
+    });
+    setResult(null);
+    setCalculations([]);
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <Calculator className="w-6 h-6 text-blue-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Calcolo Spessore Isolamento Tubazioni
+          </h1>
+        </div>
+
+        <div className="mb-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+          <p className="text-sm text-blue-800">
+            <strong>Equazione:</strong> (d₁ + 2L) · ln((d₁ + 2L) / d₁) = (2λ/α) · (Tᵢ - Td)/(Td - Ta)
+          </p>
+          <p className="text-xs text-blue-600 mt-1">
+            Il calcolo inizia da 9mm e aumenta di 1mm fino a quando il lato sinistro supera del 30% il lato destro
+          </p>
+          <p className="text-xs text-blue-600 mt-1">
+            La temperatura di rugiada (Td) viene calcolata automaticamente usando la formula di Magnus
+          </p>
+        </div>
+
+        <div className="mb-6 p-4 bg-amber-50 rounded-lg border-l-4 border-amber-400">
+          <h3 className="text-sm font-semibold text-amber-800 mb-2">⚠️ Note Importanti sulla Formula e Parametri</h3>
+          <div className="text-xs text-amber-700 space-y-1">
+            <p><strong>Formula derivata da:</strong> Bilancio termico per prevenire condensazione su superficie cilindrica isolata</p>
+            <p><strong>Assunzioni:</strong> Regime stazionario, proprietà costanti, resistenza termica dell'aria trascurabile</p>
+            <p><strong>Limitazioni:</strong> Non considera radiazione termica, effetti del vento variabile, geometrie complesse</p>
+            <p><strong>Raccomandazioni:</strong> Verificare α per condizioni specifiche, considerare margini di sicurezza aggiuntivi per applicazioni critiche</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Thermometer className="w-4 h-4 inline mr-1" />
+              Temperatura del fluido nel tubo Ti (°C)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={inputs.Ti}
+              onChange={(e) => handleInputChange('Ti', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="es. 7"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Thermometer className="w-4 h-4 inline mr-1" />
+              Temperatura ambiente Ta (°C)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={inputs.Ta}
+              onChange={(e) => handleInputChange('Ta', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="es. 35"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Coeff. convezione termica α (W/m²·K)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={inputs.alpha}
+              onChange={(e) => handleInputChange('alpha', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="es. 5"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Aria ferma: ~5, Aria in movimento: 10-25, Vento forte: 25-100
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Conduttività termica dell'isolante λ (W/m·K)
+            </label>
+            <input
+              type="number"
+              step="0.001"
+              value={inputs.lambda}
+              onChange={(e) => handleInputChange('lambda', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="es. 0.038"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Thermometer className="w-4 h-4 inline mr-1" />
+              Umidità relativa RH (%)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="100"
+              value={inputs.RH}
+              onChange={(e) => handleInputChange('RH', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="es. 50"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              La temperatura di rugiada sarà calcolata automaticamente
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Layers className="w-4 h-4 inline mr-1" />
+              Diametro esterno della tubazione d₁ (mm)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={inputs.d1}
+              onChange={(e) => handleInputChange('d1', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="es. 25"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={calculateThickness}
+            className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors font-medium"
+          >
+            Calcola Spessore Minimo
+          </button>
+          <button
+            onClick={clearAll}
+            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            Cancella
+          </button>
+        </div>
+
+        {result && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+            <h2 className="text-xl font-bold text-green-800 mb-4">Risultato</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white p-4 rounded-md">
+                <h3 className="font-semibold text-gray-800 mb-2">Spessore Minimo Richiesto</h3>
+                <p className="text-2xl font-bold text-green-600">{result.minimumThickness.toFixed(0)} mm</p>
+                <p className="text-sm text-gray-600">({(result.minimumThickness/1000).toFixed(3)} m)</p>
+              </div>
+              <div className="bg-white p-4 rounded-md">
+                <h3 className="font-semibold text-gray-800 mb-2">Temperatura di Rugiada</h3>
+                <p className="text-xl font-bold text-blue-600">{result.dewPoint.toFixed(1)} °C</p>
+                <p className="text-sm text-gray-600">Calcolata automaticamente</p>
+              </div>
+              <div className="bg-white p-4 rounded-md">
+                <h3 className="font-semibold text-gray-800 mb-2">Verifica Equazione</h3>
+                <p className="text-sm text-gray-600">
+                  Lato sinistro: <span className="font-mono">{result.leftSide.toFixed(6)}</span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Lato destro: <span className="font-mono">{result.rightSide.toFixed(6)}</span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Differenza: <span className="font-semibold text-green-600">+{result.percentageDifference.toFixed(1)}%</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {calculations.length > 0 && (
+          <div className="bg-gray-50 rounded-lg p-6">
+            <h2 className="text-lg font-bold text-gray-800 mb-4">Iterazioni di Calcolo</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="text-left p-2">Spessore (mm)</th>
+                    <th className="text-left p-2">Lato Sinistro</th>
+                    <th className="text-left p-2">Lato Destro</th>
+                    <th className="text-left p-2">Rapporto</th>
+                    <th className="text-left p-2">Differenza %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {calculations.slice(-10).map((calc, index) => (
+                    <tr key={index} className={calc.percentageDifference >= 30 ? "bg-green-100" : "bg-white"}>
+                      <td className="p-2 font-mono">{calc.thickness.toFixed(0)}</td>
+                      <td className="p-2 font-mono">{calc.leftSide}</td>
+                      <td className="p-2 font-mono">{calc.rightSide}</td>
+                      <td className="p-2 font-mono">{calc.ratio}</td>
+                      <td className="p-2 font-mono">
+                        <span className={calc.percentageDifference >= 30 ? "text-green-600 font-semibold" : ""}>
+                          {calc.percentageDifference}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Mostrate le ultime 10 iterazioni. La riga evidenziata in verde indica il primo spessore che soddisfa il criterio del 30%.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
