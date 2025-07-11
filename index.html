@@ -6,6 +6,16 @@
   <title>Calcolo Spessore Isolamento Tubazioni</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Aggiunge una piccola animazione per i risultati */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+  </style>
 </head>
 <body class="bg-gray-50">
 
@@ -108,10 +118,8 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Inizializza le icone
       lucide.createIcons();
 
-      // 2. Seleziona tutti gli elementi del DOM
       const inputs = {
         Ti: document.getElementById('Ti'),
         Ta: document.getElementById('Ta'),
@@ -125,7 +133,6 @@
       const calculateButton = document.getElementById('calculateButton');
       const clearButton = document.getElementById('clearButton');
 
-      // 3. DEFINIZIONE DI TUTTE LE FUNZIONI
       const clearAll = () => {
         for (const key in inputs) {
           inputs[key].value = '';
@@ -138,8 +145,7 @@
         const a = 17.27;
         const b = 237.7;
         const alpha_dp = ((a * temperature) / (b + temperature)) + Math.log(relativeHumidity / 100);
-        const dewPoint = (b * alpha_dp) / (a - alpha_dp);
-        return dewPoint;
+        return (b * alpha_dp) / (a - alpha_dp);
       };
 
       const renderResult = (result) => {
@@ -172,7 +178,9 @@
             calculationsContainer.innerHTML = '';
             return;
         }
-        const lastTen = calculations.slice(-10);
+        const resultIndex = calculations.findIndex(calc => calc.percentageDifference >= 30);
+        const lastTen = resultIndex !== -1 ? calculations.slice(Math.max(0, resultIndex - 8), resultIndex + 2) : calculations.slice(-10);
+
         const tableRows = lastTen.map(calc => {
           const isResultRow = calc.percentageDifference >= 30;
           const rowClass = isResultRow ? "bg-green-100 font-bold" : "bg-white";
@@ -188,7 +196,7 @@
         }).join('');
 
         calculationsContainer.innerHTML = `
-          <div class="bg-gray-50 rounded-lg p-6">
+          <div class="bg-gray-50 rounded-lg p-6 animate-fade-in">
             <h2 class="text-lg font-bold text-gray-800 mb-4">Dettaglio Iterazioni di Calcolo</h2>
             <div class="overflow-x-auto">
               <table class="w-full text-sm">
@@ -204,12 +212,14 @@
                 <tbody>${tableRows}</tbody>
               </table>
             </div>
-            <p class="text-xs text-gray-500 mt-2">Mostrate le ultime 10 iterazioni. La riga evidenziata indica il primo spessore che soddisfa il criterio del +30%.</p>
+            <p class="text-xs text-gray-500 mt-2">Mostrate le iterazioni significative. La riga evidenziata indica il primo spessore che soddisfa il criterio del +30%.</p>
           </div>`;
       };
       
       const calculateThickness = () => {
-        clearAll(); // Pulisce i risultati precedenti ad ogni nuovo calcolo
+        // CORREZIONE: Pulisce solo i risultati, non gli input.
+        resultContainer.innerHTML = '';
+        calculationsContainer.innerHTML = '';
 
         const Ti = parseFloat(inputs.Ti.value);
         const Ta = parseFloat(inputs.Ta.value);
@@ -288,7 +298,6 @@
         }
       };
 
-      // 4. COLLEGAMENTO DEGLI EVENT LISTENER
       calculateButton.addEventListener('click', calculateThickness);
       clearButton.addEventListener('click', clearAll);
     });
